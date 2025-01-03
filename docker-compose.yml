@@ -3,13 +3,37 @@ services:
   redis:
     image: redis:latest
     container_name: arq_redis
+    networks:
+      - arq_network
     ports:
       - "6379:6379"
 
-  arq_worker:
+  arq_worker_1:
+    privileged: true
     build:
       context: .
-    #container_name: arq_worker
+    container_name: arq_worker_1
+    networks:
+      - arq_network
     depends_on:
       - redis
     command: ["arq", "main.WorkerSettings"]
+    environment:
+      - WORKER_NAME=worker_1
+
+  arq_worker_2:
+    privileged: true
+    build:
+      context: .
+    container_name: arq_worker_2
+    networks:
+      - arq_network
+    depends_on:
+      - redis
+    command: [ "arq", "main.WorkerSettings" ]
+    environment:
+      - WORKER_NAME=worker_2
+
+networks:
+  arq_network:
+    driver: bridge
