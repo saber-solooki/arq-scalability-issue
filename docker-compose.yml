@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  redis:
+    image: redis:latest
+    container_name: arq_redis
+    ports:
+      - "6379:6379"
+
+  arq_worker:
+    build:
+      context: .
+    #container_name: arq_worker
+    depends_on:
+      - redis
+    command: ["arq", "main.WorkerSettings"]
